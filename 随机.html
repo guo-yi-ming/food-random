@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>今天吃什么？</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    }
+
+    body {
+      background-color: #f8f9fa;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      margin-top: 30px;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      color: #ff6b6b;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      font-size: 14px;
+      color: #868e96;
+    }
+
+    .result-area {
+      background-color: white;
+      border-radius: 15px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+      padding: 30px;
+      margin-bottom: 40px;
+      text-align: center;
+      height: 200px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    .food-name {
+      font-size: 32px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .food-category {
+      font-size: 14px;
+      color: #868e96;
+    }
+
+    .button-container {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .random-btn {
+      background-color: #ff6b6b;
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 16px 32px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 8px 15px rgba(255, 107, 107, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .random-btn:hover,
+    .random-btn:active {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(255, 107, 107, 0.4);
+    }
+
+    .random-btn:active {
+      transform: translateY(1px);
+    }
+
+    .shake {
+      animation: shake 0.5s;
+    }
+
+    .settings {
+      margin-top: 20px;
+    }
+
+    .settings-title {
+      font-size: 16px;
+      margin-bottom: 15px;
+      color: #495057;
+    }
+
+    .categories {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .category-btn {
+      background-color: #e9ecef;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .category-btn.active {
+      background-color: #ff6b6b;
+      color: white;
+    }
+
+    .custom-food {
+      margin-top: 20px;
+    }
+
+    .custom-input {
+      width: 70%;
+      padding: 10px;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      margin-right: 10px;
+      font-size: 14px;
+    }
+
+    .add-btn {
+      background-color: #4dabf7;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 15px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .custom-list {
+      margin-top: 15px;
+      background-color: white;
+      border-radius: 8px;
+      padding: 10px;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .custom-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #f1f3f5;
+    }
+
+    .delete-btn {
+      background-color: #ff8787;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    footer {
+      margin-top: auto;
+      text-align: center;
+      padding: 20px;
+      color: #adb5bd;
+      font-size: 12px;
+    }
+
+    @keyframes shake {
+      0% {
+        transform: translateX(0);
+      }
+
+      20% {
+        transform: translateX(-10px);
+      }
+
+      40% {
+        transform: translateX(10px);
+      }
+
+      60% {
+        transform: translateX(-10px);
+      }
+
+      80% {
+        transform: translateX(10px);
+      }
+
+      100% {
+        transform: translateX(0);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>今天吃什么？</h1>
+      <p>解决选择困难症，随机推荐美味佳肴</p>
+    </div>
+
+    <div class="result-area" id="resultArea">
+      <div class="food-name" id="foodName">点击下方按钮</div>
+      <div class="food-category" id="foodCategory">获取今天的美食推荐</div>
+    </div>
+
+    <div class="button-container">
+      <button class="random-btn" id="randomBtn">随机推荐</button>
+    </div>
+
+    <div class="settings">
+      <div class="settings-title">选择食物类型：</div>
+      <div class="categories" id="categories">
+        <button class="category-btn active" data-category="all">全部</button>
+        <button class="category-btn" data-category="中餐">中餐</button>
+        <button class="category-btn" data-category="西餐">西餐</button>
+        <button class="category-btn" data-category="快餐">快餐</button>
+        <button class="category-btn" data-category="面食">面食</button>
+        <button class="category-btn" data-category="米饭">米饭</button>
+        <button class="category-btn" data-category="小吃">小吃</button>
+      </div>
+
+      <div class="custom-food">
+        <div class="settings-title">添加自定义食物：</div>
+        <input type="text" class="custom-input" id="customInput" placeholder="输入食物名称">
+        <button class="add-btn" id="addBtn">添加</button>
+
+        <div class="custom-list" id="customList"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    随机美食推荐 &copy; 2023
+  </footer>
+
+  <script>
+    // 预设食物列表
+    const defaultFoods = [
+      { name: "宫保鸡丁", category: "中餐" },
+      { name: "红烧肉", category: "中餐" },
+      { name: "鱼香肉丝", category: "中餐" },
+      { name: "麻婆豆腐", category: "中餐" },
+      { name: "糖醋里脊", category: "中餐" },
+      { name: "回锅肉", category: "中餐" },
+      { name: "东坡肉", category: "中餐" },
+      { name: "水煮鱼", category: "中餐" },
+      { name: "小龙虾", category: "中餐" },
+      { name: "干锅肥肠", category: "中餐" },
+      { name: "意大利面", category: "西餐" },
+      { name: "牛排", category: "西餐" },
+      { name: "汉堡", category: "西餐" },
+      { name: "披萨", category: "西餐" },
+      { name: "沙拉", category: "西餐" },
+      { name: "三明治", category: "西餐" },
+      { name: "肯德基", category: "快餐" },
+      { name: "麦当劳", category: "快餐" },
+      { name: "必胜客", category: "快餐" },
+      { name: "德克士", category: "快餐" },
+      { name: "华莱士", category: "快餐" },
+      { name: "兰州拉面", category: "面食" },
+      { name: "重庆小面", category: "面食" },
+      { name: "担担面", category: "面食" },
+      { name: "刀削面", category: "面食" },
+      { name: "热干面", category: "面食" },
+      { name: "牛肉面", category: "面食" },
+      { name: "炸酱面", category: "面食" },
+      { name: "麻辣烫", category: "小吃" },
+      { name: "烧烤", category: "小吃" },
+      { name: "煎饼果子", category: "小吃" },
+      { name: "肉夹馍", category: "小吃" },
+      { name: "小笼包", category: "小吃" },
+      { name: "锅贴", category: "小吃" },
+      { name: "煲仔饭", category: "米饭" },
+      { name: "黄焖鸡米饭", category: "米饭" },
+      { name: "石锅拌饭", category: "米饭" },
+      { name: "焖饭", category: "米饭" },
+      { name: "盖浇饭", category: "米饭" },
+      { name: "炒饭", category: "米饭" },
+      { name: "烤肉拌饭", category: "米饭" }
+    ];
+
+    // 获取DOM元素
+    const randomBtn = document.getElementById('randomBtn');
+    const foodName = document.getElementById('foodName');
+    const foodCategory = document.getElementById('foodCategory');
+    const resultArea = document.getElementById('resultArea');
+    const categoriesContainer = document.getElementById('categories');
+    const categoryBtns = document.querySelectorAll('.category-btn');
+    const customInput = document.getElementById('customInput');
+    const addBtn = document.getElementById('addBtn');
+    const customList = document.getElementById('customList');
+
+    // 当前选中的分类
+    let selectedCategory = 'all';
+
+    // 自定义食物列表
+    let customFoods = [];
+
+    // 从本地存储加载自定义食物
+    function loadCustomFoods () {
+      const storedFoods = localStorage.getItem('customFoods');
+      if (storedFoods) {
+        customFoods = JSON.parse(storedFoods);
+        renderCustomList();
+      }
+    }
+
+    // 保存自定义食物到本地存储
+    function saveCustomFoods () {
+      localStorage.setItem('customFoods', JSON.stringify(customFoods));
+    }
+
+    // 渲染自定义食物列表
+    function renderCustomList () {
+      customList.innerHTML = '';
+      customFoods.forEach((food, index) => {
+        const item = document.createElement('div');
+        item.className = 'custom-item';
+        item.innerHTML = `
+                    <span>${food.name}</span>
+                    <button class="delete-btn" data-index="${index}">删除</button>
+                `;
+        customList.appendChild(item);
+      });
+
+      // 绑定删除按钮事件
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+          const index = parseInt(this.getAttribute('data-index'));
+          customFoods.splice(index, 1);
+          saveCustomFoods();
+          renderCustomList();
+        });
+      });
+    }
+
+    // 随机选择食物
+    function getRandomFood () {
+      // 合并默认食物和自定义食物
+      let allFoods = [...defaultFoods, ...customFoods];
+
+      // 根据选中的分类筛选食物
+      if (selectedCategory !== 'all') {
+        allFoods = allFoods.filter(food => food.category === selectedCategory);
+      }
+
+      // 如果没有符合条件的食物，显示提示信息
+      if (allFoods.length === 0) {
+        foodName.textContent = '没有符合条件的食物';
+        foodCategory.textContent = '请选择其他分类或添加自定义食物';
+        return;
+      }
+
+      // 随机选择一个食物
+      const randomIndex = Math.floor(Math.random() * allFoods.length);
+      const food = allFoods[randomIndex];
+
+      // 更新显示
+      foodName.textContent = food.name;
+      foodCategory.textContent = food.category;
+    }
+
+    // 添加动画效果
+    function addShakeEffect () {
+      resultArea.classList.add('shake');
+      setTimeout(() => {
+        resultArea.classList.remove('shake');
+      }, 500);
+    }
+
+    // 绑定随机按钮点击事件
+    randomBtn.addEventListener('click', function () {
+      addShakeEffect();
+      setTimeout(getRandomFood, 500);
+    });
+
+    // 绑定分类按钮点击事件
+    categoryBtns.forEach(btn => {
+      btn.addEventListener('click', function () {
+        // 移除所有按钮的active类
+        categoryBtns.forEach(b => b.classList.remove('active'));
+        // 添加当前按钮的active类
+        this.classList.add('active');
+        // 更新选中的分类
+        selectedCategory = this.getAttribute('data-category');
+      });
+    });
+
+    // 绑定添加自定义食物按钮点击事件
+    addBtn.addEventListener('click', function () {
+      const foodName = customInput.value.trim();
+      if (foodName) {
+        customFoods.push({ name: foodName, category: '自定义' });
+        saveCustomFoods();
+        renderCustomList();
+        customInput.value = '';
+      }
+    });
+
+    // 绑定回车键添加自定义食物
+    customInput.addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') {
+        addBtn.click();
+      }
+    });
+
+    // 页面加载时执行
+    window.addEventListener('DOMContentLoaded', function () {
+      loadCustomFoods();
+    });
+  </script>
+</body>
+
+</html>
